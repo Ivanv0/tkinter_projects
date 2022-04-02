@@ -44,7 +44,7 @@ canv.create_line((cx, 0), (cx, ch))
 
 f1 = function('sin(sqrt(2*x)) + cos(x)')
 f2 = function('sin(x) + cos(2*x)')
-f3 = tuple(map(lambda x, y: (x[0], x[1]*2 - y[1]*3), f1, f2))
+f3 = tuple(map(lambda f1, f2: (f1[0], f1[1]*2 - f2[1]*3), f1, f2))
 
 canv.create_line(tuple(map(center, f1)), fill='red')
 canv.create_line(tuple(map(center, f2)), fill='green')
