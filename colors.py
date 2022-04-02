@@ -55,7 +55,7 @@ def reprint():
 def get_help():
 	message = '''For reprint, you can use x, y,
 ordinary numbers and python expressions
-you can also use two functions sra and srg
+you can also use two functions am and gm
 am - the algebraic mean
 am(a, b) = (a + b) / 2
 gm - is the geometric mean
