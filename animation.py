@@ -6,18 +6,6 @@ def end_xy(line_length, angle):
 	y = center_y + line_length * sin(angle)
 	return (x,y)
 
-def animation(event):
-	anim = True
-	while anim:
-		big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
-		small = canv.create_line((center_x, center_y), end_xy(len_of_small, angle_of_small))
-		canv.update()
-		root.after(10)
-		angle_of_big += angle_step
-		angle_of_small += angle_step / 12
-		canv.delete(big)
-		canv.delete(small)
-
 root = Tk()
 
 # высота и ширина холста могут быть разными
