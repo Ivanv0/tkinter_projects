@@ -31,7 +31,13 @@ len_of_small = (canv.winfo_width() - 4) // 6
 
 angle_step = pi / 180
 
-while True:
+def stop(event):
+	global anim 
+	anim = False
+
+anim = True
+root.bind('<Escape>', stop)
+while anim:
 	big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
 	small = canv.create_line((center_x, center_y), end_xy(len_of_small, angle_of_small))
 	canv.update()
@@ -41,6 +47,7 @@ while True:
 	canv.delete(big)
 	canv.delete(small)
 
+root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
 # при закрытии выдаёт ошибку связанную с прерыванием
 # стрелки кажется не синхронизированы из-за округления
