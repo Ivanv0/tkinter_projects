@@ -1,4 +1,5 @@
 from tkinter import Tk, Canvas, LabelFrame, Button, Label, Entry, Frame
+from math import *
 
 def get_text(w):
     if n := w.get():
@@ -33,13 +34,17 @@ def hard_function(f, kwargs):
 
 def x_limits():
     global x_min, x_max
-    x_min = float(get_text(x_interval_start_entry))
-    x_max = float(get_text(x_interval_finish_entry))
+    x_min = eval(get_text(x_interval_start_entry))
+    if x_min == 0:
+        x_min = 0
+    x_max = eval(get_text(x_interval_finish_entry))
+    if x_max == 0:
+        x_max = 1
 
 def get_step():
     global step
-    step = float(get_text(step_entry))
-    if step <= 0:
+    step = eval(get_text(step_entry))
+    if step == 0:
         step = 1
 
 def y_limits(f1, f2, f3):
@@ -100,8 +105,22 @@ def grid():
         canvas.create_line((axis_x - 2, y), (axis_x + 2, y), fill='black')
 
 def axis():
-    canvas.create_line((0, axis_y), (canvas_width, axis_y))
-    canvas.create_line((axis_x, 0), (axis_x, canvas_height))
+    canvas.create_line((0, axis_y), (canvas_width, axis_y), arrow='last')
+    canvas.create_line((axis_x, 0), (axis_x, canvas_height), arrow='first')
+    canvas.create_oval((axis_x-2, axis_y-2), (axis_x+2, axis_y+2), fill='black')
+
+def text():
+    canvas.create_text(axis_x + 10, axis_y - 10, text='0')
+
+    if x_min <= -1:
+        canvas.create_text(axis_x - cell_width, axis_y + 10, text='-1')
+    if x_max >= 1:
+        canvas.create_text(axis_x + cell_width, axis_y + 10, text='1')
+
+    if y_min <= -1:
+        canvas.create_text(axis_x + 10, axis_y + cell_height, text='-1')
+    if y_max >= 1:
+        canvas.create_text(axis_x + 10, axis_y - cell_height, text='1')
 
 def center(dot):
     x, y = dot
@@ -119,13 +138,14 @@ def build(event=''):
         x_limits()
         get_step()
         f1 = function(get_text(f1_entry))
-        f2 = function(get_text(f2_entry), f1=f1)
+        f2 = function(get_text(f2_entry), f1=f1, f2=())
         f3 = function(get_text(f3_entry), f1=f1, f2=f2)
         y_limits(f1, f2, f3)
         cell_size()
         axis_xy()
         grid()
         axis()
+        text()
         if f1 != '': canvas.create_line(tuple(map(center, f1)), fill='red')
         if f2 != '': canvas.create_line(tuple(map(center, f2)), fill='green')
         if f3 != '': canvas.create_line(tuple(map(center, f3)), fill='blue')
@@ -136,7 +156,7 @@ def build(event=''):
 
 root = Tk()
 
-canvas_height = 500
+canvas_height = 400
 canvas_width = 800
 axis_x, axis_y = 0, 0
 x_min, x_max, y_min, y_max = 0, 0, 0, 0
