@@ -59,7 +59,6 @@ def stop(event):
 
 def speed(event):
 	global upd_time
-	print(event.keysym)
 	if event.keysym == 'equal':
 		if upd_time < 5:
 			upd_time += 1
