@@ -59,12 +59,12 @@ def stop(event):
 
 def speed(event):
 	global upd_time
-	if event.keysym == 'equal':
+	if event.char == '=':
 		if upd_time < 5:
 			upd_time += 1
 		else:
 			upd_time += 5
-	if event.keysym == 'minus':
+	if event.char == '-':
 		if upd_time > 0:
 			if upd_time <= 5:
 				upd_time -= 1
@@ -80,23 +80,21 @@ big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
 small = canv.create_line((center_x, center_y), end_xy(len_of_small, angle_of_small))
 
 while anim:
+	root.after(upd_time)
+	step += 1
 		
 	if step == 12:
 		step = 0
+
 		canv.delete(small)
 		angle_of_small += angle_step
-		angle_of_small = round(angle_of_small, 3)
 		small = canv.create_line((center_x, center_y), end_xy(len_of_small, angle_of_small))		
 	
-	canv.update()
-	root.after(upd_time)
-	angle_of_big += angle_step
-	angle_of_big = round(angle_of_big, 3)
-	
-	
-	step += 1
 	canv.delete(big)
+	angle_of_big += angle_step
 	big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
+	
+	canv.update()
 
 root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
