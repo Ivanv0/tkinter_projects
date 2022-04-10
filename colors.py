@@ -1,8 +1,10 @@
 from tkinter import Tk, Canvas, PhotoImage, Frame, Label, Button, Entry
 from tkinter import messagebox  as mb
+from math import *
 
 def rgb(r, g, b):
 	def dop(s):
+		s = round(s)
 		if s > 255:
 			s %= 256
 		if s < 0:
@@ -30,7 +32,9 @@ def get_text(w):
 	else:
 		return '0'
 
-def reprint():
+def reprint(event=''):
+	out.configure(text='Wait')
+	out.update()
 	try:
 		r = get_text(r_entry)
 		g = get_text(g_entry)
@@ -117,8 +121,9 @@ root.update()
 for x in range(256):
 	for y in range(256):
 		img.put(rgb(x,y,gm(x,y)), (x,y))
+	#canv.update()
 out['text'] = '|------------------|'
 
 canv.bind('<Motion>', get_color)
-repr_button.bind('<Button-1>', prw)
+root.bind('<Return>', reprint)
 root.mainloop()
