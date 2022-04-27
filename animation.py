@@ -31,7 +31,7 @@ root = Tk()
 # это будет выгдядеть странно, но это работает
 height = 400
 width = 400
-upd_time = 5 # время в миллисекундах используемое для анимации
+upd_time = 10 # время в миллисекундах используемое для анимации
 
 canv = Canvas(root, height=height+10, width=width+10)
 canv.pack()
@@ -80,7 +80,6 @@ big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
 small = canv.create_line((center_x, center_y), end_xy(len_of_small, angle_of_small))
 
 while anim:
-	root.after(upd_time)
 	step += 1
 		
 	if step == 12:
@@ -95,6 +94,7 @@ while anim:
 	big = canv.create_line((center_x, center_y), end_xy(len_of_big, angle_of_big))
 	
 	canv.update()
+	root.after(upd_time)
 
 root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
