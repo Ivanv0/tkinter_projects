@@ -15,7 +15,7 @@ def function(f, **kwargs):
     x = x_min
     while x <= x_max:
         sp.append((x, eval(f)))
-        x += step
+        x = round(x + step, len_step)
     return tuple(sp)
 
 def hard_function(f, kwargs):
@@ -28,7 +28,7 @@ def hard_function(f, kwargs):
         if kwargs['f2']:
             f2 = kwargs['f2'][i][1]
         sp.append((x, eval(f)))
-        x += step
+        x = round(x + step, len_step)
         i += 1
     return tuple(sp)
 
@@ -42,10 +42,14 @@ def x_limits():
         x_max = 1
 
 def get_step():
-    global step
+    global step, len_step
     step = eval(get_text(step_entry))
     if step == 0:
         step = 1
+    len_step = 0
+    if '.' in str(step):
+        n = str(step)
+        len_step = len(n[n.find('.')+1:])
 
 def y_limits(f1, f2, f3):
     global y_min, y_max
@@ -146,9 +150,9 @@ def build(event=''):
         grid()
         axis()
         text()
-        if f1 != '': canvas.create_line(tuple(map(center, f1)), fill='red')
-        if f2 != '': canvas.create_line(tuple(map(center, f2)), fill='green')
-        if f3 != '': canvas.create_line(tuple(map(center, f3)), fill='blue')
+        if f1 != '': canvas.create_line(tuple(map(center, f1)), width=line_width, fill='red')
+        if f2 != '': canvas.create_line(tuple(map(center, f2)), width=line_width, fill='green')
+        if f3 != '': canvas.create_line(tuple(map(center, f3)), width=line_width, fill='blue')
         out.configure(text='Done')
     except Exception as e:
         out.configure(text=f'{e}')
@@ -158,6 +162,7 @@ root = Tk()
 
 canvas_height = 400
 canvas_width = 800
+line_width = 2
 axis_x, axis_y = 0, 0
 x_min, x_max, y_min, y_max = 0, 0, 0, 0
 cell_height, cell_width = 0, 0
