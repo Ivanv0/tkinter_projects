@@ -1,5 +1,12 @@
 def bubble_sort(_list):
     for j in range(len(_list)):
+        for i in range(len(_list)-1):
+            if _list[i] > _list[i+1]:
+                _list[i], _list[i+1] = _list[i+1], _list[i]
+    return _list
+
+def mod_bubble_sort(_list):
+    for j in range(len(_list)):
         f = True
         for i in range(len(_list)-1-j):
             if _list[i] > _list[i+1]:
@@ -7,9 +14,6 @@ def bubble_sort(_list):
                 f = False
         if f:
             return _list
-
-#def mod_bubble_sort(_list):
-#    return None
 
 def quick_sort(_list):
     if len(_list) < 2:
