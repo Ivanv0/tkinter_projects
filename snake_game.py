@@ -1,208 +1,127 @@
-from tkinter import Tk, Canvas, LabelFrame, Button, Label, Entry, Frame
-from math import *
+from tkinter import Tk, Canvas, Label
+from random import randrange
 
-def get_text(w):
-    if n := w.get():
-        return n
-    return '0'
+speed = 200
+canvas_width = 600
+canvas_height = 500
+cell_size = 25
+snake_length = 3
 
-def function(f, **kwargs):
-    if f == '0':
-        return ''
-    if 'f' in f:
-        return hard_function(f, kwargs)
-    sp = []
-    x = x_min
-    while x <= x_max:
-        sp.append((x, eval(f)))
-        x += step
-    return tuple(sp)
+canvas_bg = 'snow'
+snake_head_color = 'lime green'
+snake_body_color = 'lawn green'
+food_color = 'tomato'
 
-def hard_function(f, kwargs):
-    sp = []
-    x = x_min
-    i = 0
-    while x <= x_max:
-        if kwargs['f1']:
-            f1 = kwargs['f1'][i][1]
-        if kwargs['f2']:
-            f2 = kwargs['f2'][i][1]
-        sp.append((x, eval(f)))
-        x += step
-        i += 1
-    return tuple(sp)
+class Snake:
+    def __init__(self):
+        self.coords = [(0,0)] * snake_length
+        self.squares = []
+        for x, y in self.coords:
+            square = canvas.create_rectangle((x+1, y+1),
+                (x+cell_size-1, y+cell_size-1), fill=snake_body_color)
+            self.squares.insert(0, square)
 
-def x_limits():
-    global x_min, x_max
-    x_min = eval(get_text(x_interval_start_entry))
-    if x_min == 0:
-        x_min = 0
-    x_max = eval(get_text(x_interval_finish_entry))
-    if x_max == 0:
-        x_max = 1
+class Food:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.square = 0
+        self.place()
 
-def get_step():
-    global step
-    step = eval(get_text(step_entry))
-    if step == 0:
-        step = 1
+    def place(self):
+        while (self.x, self.y) in snake.coords:
+            self.x = randrange(0, canvas_width // cell_size) * cell_size
+            self.y = randrange(0, canvas_height // cell_size) * cell_size
+        self.square = canvas.create_rectangle((self.x, self.y),
+            (self.x+cell_size, self.y+cell_size), fill=food_color)
 
-def y_limits(f1, f2, f3):
-    global y_min, y_max
-    y_min, y_max = 0, 0
-    for i in range(len(f1)):
-        y_min = min(y_min, f1[i][1])
-        y_max = max(y_max, f1[i][1])
-    for i in range(len(f2)):
-        y_min = min(y_min, f2[i][1])
-        y_max = max(y_max, f2[i][1])
-    for i in range(len(f3)):
-        y_min = min(y_min, f3[i][1])
-        y_max = max(y_max, f3[i][1])
+    def replace(self):
+        canvas.delete(self.square)
+        self.place()
 
-def cell_size():
-    global cell_height, cell_width
+def move():
+    x, y = snake.coords[0]
 
-    if x_min <= 0 <= x_max:
-        xcount = round(x_max - x_min)
-    elif x_max < 0:
-        xcoun = round(-x_min)
+    if direction == 'right':
+        x += cell_size
+    elif direction == 'left':
+        x -= cell_size
+    elif direction == 'up':
+        y -= cell_size
+    elif direction == 'down':
+        y += cell_size
+
+    if check_collision(x, y):
+        canvas.create_text((canvas_width//2, canvas_height//2),
+            text='GAME OVER', font='Times 50')
     else:
-        xcount = round(x_max)
-    cell_width = canvas_width // (xcount + 2)
+        snake.coords.insert(0, (x, y))
+        square = canvas.create_rectangle((x+1, y+1),
+            (x+cell_size-1, y+cell_size-1), fill=snake_head_color)
+        snake.squares.insert(0, square)
 
-    if y_min <= 0 <= y_max:
-        ycount = round(y_max - y_min)
-    elif y_max < 0:
-        ycount = round(-y_min)
-    else:
-        ycount = round(y_max)
-    cell_height = canvas_height // (ycount + 2)
+        canvas.itemconfig(snake.squares[1], fill=snake_body_color)
 
-def axis_xy():
-    global axis_x, axis_y
+        if x == food.x and y == food.y:
+            global score
 
-    if x_min <= 0 <= x_max:
-        axis_x = (round(-x_min) + 1) * cell_width
-    elif x_max < 0:
-        axis_x = cell_width * (canvas_width // cell_width - 1)
-    else:
-        axis_x = cell_width
+            food.replace()
+            score += 1
+            label_score.configure(text=f'{score}')
+        else:
+            del snake.coords[-1]
+            canvas.delete(snake.squares.pop())
 
-    if y_min <= 0 <= y_max:
-        axis_y = (round(y_max) + 1) * cell_height
-    elif y_max < 0:
-        axis_y = cell_height
-    else:
-        axis_y = cell_height * (canvas_height // cell_height - 1)
+        root.after(speed, move)
 
-def grid():
-    for x in range(cell_width, canvas_width, cell_width):
-        canvas.create_line((x, 0), (x, canvas_height), fill='grey70', dash=1)
-        canvas.create_line((x, axis_y - 2), (x, axis_y + 2), fill='black')
-    for y in range(cell_height, canvas_height, cell_height):
-        canvas.create_line((0, y), (canvas_width, y), fill='grey70', dash=1)
-        canvas.create_line((axis_x - 2, y), (axis_x + 2, y), fill='black')
+def change_direction(new):
+    global direction
 
-def axis():
-    canvas.create_line((0, axis_y), (canvas_width, axis_y), arrow='last')
-    canvas.create_line((axis_x, 0), (axis_x, canvas_height), arrow='first')
-    canvas.create_oval((axis_x-2, axis_y-2), (axis_x+2, axis_y+2), fill='black')
+    if new != direction:
+        if new != wrong_direction():
+            direction = new
 
-def text():
-    canvas.create_text(axis_x + 10, axis_y - 10, text='0')
+def wrong_direction():
+    head = snake.coords[0]
+    body = snake.coords[1]
 
-    if x_min <= -1:
-        canvas.create_text(axis_x - cell_width, axis_y + 10, text='-1')
-    if x_max >= 1:
-        canvas.create_text(axis_x + cell_width, axis_y + 10, text='1')
+    if head[0] > body[0]:
+        return 'left'
+    elif body[0] > head[0]:
+        return 'right'
+    elif head[1] < body[1]:
+        return 'down'
+    elif head[1] > body[1]:
+        return 'up'
 
-    if y_min <= -1:
-        canvas.create_text(axis_x + 10, axis_y + cell_height, text='-1')
-    if y_max >= 1:
-        canvas.create_text(axis_x + 10, axis_y - cell_height, text='1')
-
-def center(dot):
-    x, y = dot
-    x *= cell_width
-    x += axis_x
-    y *= cell_height
-    y = axis_y - y
-    return x, y
-
-def build(event=''):
-    out.configure(text='Wait')
-    out.update()
-    try:
-        canvas.delete('all')
-        x_limits()
-        get_step()
-        f1 = function(get_text(f1_entry))
-        f2 = function(get_text(f2_entry), f1=f1, f2=())
-        f3 = function(get_text(f3_entry), f1=f1, f2=f2)
-        y_limits(f1, f2, f3)
-        cell_size()
-        axis_xy()
-        grid()
-        axis()
-        text()
-        if f1 != '': canvas.create_line(tuple(map(center, f1)), fill='red')
-        if f2 != '': canvas.create_line(tuple(map(center, f2)), fill='green')
-        if f3 != '': canvas.create_line(tuple(map(center, f3)), fill='blue')
-        out.configure(text='Done')
-    except Exception as e:
-        out.configure(text=f'{e}')
-        raise e
+def check_collision(x, y):
+    if x < 0 or x >= canvas_width:
+        return True
+    if y < 0 or y >= canvas_height:
+        return True
+    if (x, y) in snake.coords[1:]:
+        return True
 
 root = Tk()
+root.geometry('+0+0')
+root.resizable(False, False)
 
-canvas_height = 500
-canvas_width = 800
-axis_x, axis_y = 0, 0
-x_min, x_max, y_min, y_max = 0, 0, 0, 0
-cell_height, cell_width = 0, 0
-step = 0
+score = 3
+label_score = Label(text=f'{score}', font='Times 30')
+label_score.pack()
 
-canvas = Canvas(height=canvas_height, width=canvas_width, background='snow')
+canvas = Canvas(width=canvas_width, height=canvas_height, bg=canvas_bg)
 canvas.pack()
 
-frame = LabelFrame(text='Functions')
+direction = 'right'
+snake = Snake()
+food = Food()
 
-Label(frame, text='f1', font='Times 30', fg='red').pack(side='left', padx=5, pady=5)
-f1_entry = Entry(frame, font='Times 30', width=10, fg='red')
-f1_entry.pack(side='left', padx=5, pady=5)
+root.bind('<Up>', lambda event: change_direction('up'))
+root.bind('<Down>', lambda event: change_direction('down'))
+root.bind('<Right>', lambda event: change_direction('right'))
+root.bind('<Left>', lambda event: change_direction('left'))
 
-Label(frame, text='f2', font='Times 30', fg='green').pack(side='left', padx=5, pady=5)
-f2_entry = Entry(frame, font='Times 30', width=10, fg='green')
-f2_entry.pack(side='left', padx=5, pady=5)
-
-Label(frame, text='f3', font='Times 30', fg='blue').pack(side='left', padx=5, pady=5)
-f3_entry = Entry(frame, font='Times 30', width=10, fg='blue')
-f3_entry.pack(side='left', padx=5, pady=5)
-
-frame.pack(pady=5)
-
-frame2 = Frame()
-interval_frame = LabelFrame(frame2, text='Interval')
-
-x_interval_start_entry = Entry(interval_frame, font='Times 30', width=5)
-x_interval_start_entry.pack(side='left', padx=5, pady=5)
-Label(interval_frame, text='≤ x ≤', font='Times 30').pack(side='left', padx=5, pady=5)
-x_interval_finish_entry = Entry(interval_frame, font='Times 30', width=5)
-x_interval_finish_entry.pack(side='left', padx=5, pady=5)
-
-interval_frame.pack(side='left', padx=30)
-
-Label(frame2, text='Step', font=('Times', 30)).pack(side='left', padx=10)
-step_entry = Entry(frame2, font='Times 30', width=5)
-step_entry.pack(side='left')
-
-Button(frame2, text='PRINT', font=('Times', 30), command=build).pack(side='left', padx=20)
-root.bind('<Return>', build)
-
-frame2.pack()
-
-out = Label(text='|\t-\t-\t-\t-\t-\t|', font=('Times', 20), width=50)
-out.pack()
+move()
 
 root.mainloop()
