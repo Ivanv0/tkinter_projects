@@ -124,4 +124,6 @@ root.bind('<Left>', lambda event: change_direction('left'))
 
 move()
 
+
+root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
