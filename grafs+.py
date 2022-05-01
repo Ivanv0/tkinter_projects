@@ -159,6 +159,7 @@ def build(event=''):
         raise e
 
 root = Tk()
+root.geometry('+0+0')
 
 canvas_height = 400
 canvas_width = 800

@@ -7,10 +7,13 @@ canvas_height = 500
 cell_size = 25
 snake_length = 3
 
-canvas_bg = 'snow'
+canvas_bg = 'linen'
 snake_head_color = 'lime green'
+snake_head_frame_color = 'cyan'
 snake_body_color = 'lawn green'
+snake_body_frame_color = 'pale green'
 food_color = 'tomato'
+food_frame_color = 'coral'
 
 class Snake:
     def __init__(self):
@@ -25,18 +28,18 @@ class Food:
     def __init__(self):
         self.x = 0
         self.y = 0
-        self.square = 0
+        self.oval = 0
         self.place()
 
     def place(self):
         while (self.x, self.y) in snake.coords:
             self.x = randrange(0, canvas_width // cell_size) * cell_size
             self.y = randrange(0, canvas_height // cell_size) * cell_size
-        self.square = canvas.create_rectangle((self.x, self.y),
-            (self.x+cell_size, self.y+cell_size), fill=food_color)
+        self.oval = canvas.create_oval((self.x+2, self.y+2), (self.x+cell_size-2, self.y+cell_size-2),
+            fill=food_color, outline=food_frame_color)
 
     def replace(self):
-        canvas.delete(self.square)
+        canvas.delete(self.oval)
         self.place()
 
 def move():
@@ -56,11 +59,12 @@ def move():
             text='GAME OVER', font='Times 50')
     else:
         snake.coords.insert(0, (x, y))
-        square = canvas.create_rectangle((x+1, y+1),
-            (x+cell_size-1, y+cell_size-1), fill=snake_head_color)
+        square = canvas.create_rectangle((x+1, y+1), (x+cell_size-1, y+cell_size-1),
+            fill=snake_head_color, outline=snake_head_frame_color)
         snake.squares.insert(0, square)
 
-        canvas.itemconfig(snake.squares[1], fill=snake_body_color)
+        canvas.itemconfig(snake.squares[1], fill=snake_body_color,
+            outline= snake_body_frame_color)
 
         if x == food.x and y == food.y:
             global score
@@ -123,7 +127,6 @@ root.bind('<Right>', lambda event: change_direction('right'))
 root.bind('<Left>', lambda event: change_direction('left'))
 
 move()
-
 
 root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
