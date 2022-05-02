@@ -120,8 +120,17 @@ def new_line(x, y):
         snake.line_f.insert(0, canvas.create_line((center_x, center_y-cell_size),
             (center_x, y), fill=snake_body_line_color))
 
-def change_direction(new):
+def change_direction(event):
     global direction
+    new = ''
+    if event.char in ('w', 'ц'):
+        new = 'up'
+    elif event.char in ('a', 'ф'):
+        new = 'left'
+    elif event.char in ('s', 'ы'):
+        new = 'down'
+    elif event.char in ('d', 'в'):
+        new = 'right'
 
     if new != direction:
         if new != wrong_direction():
@@ -166,10 +175,7 @@ direction = 'right'
 snake = Snake()
 food = Food()
 
-root.bind('<w>', lambda event: change_direction('up'))
-root.bind('<s>', lambda event: change_direction('down'))
-root.bind('<d>', lambda event: change_direction('right'))
-root.bind('<a>', lambda event: change_direction('left'))
+root.bind('<Key>', change_direction)
 
 move()
 
