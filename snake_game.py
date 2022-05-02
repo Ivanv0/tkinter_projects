@@ -18,16 +18,18 @@ snake_body_line_color = 'black'
 food_color = 'tomato'
 food_frame_color = 'coral'
 
+
 class Snake:
     def __init__(self):
-        self.coords = [(0,0)] * snake_length
+        self.coords = [(0, 0)] * snake_length
         self.squares = []
         self.line_s = [0] * (snake_length - 1)
         self.line_f = [0] * (snake_length - 1)
         for x, y in self.coords:
-            square = canvas.create_rectangle((x+1, y+1),
-                (x+cell_size-1, y+cell_size-1), fill=snake_body_color)
+            square = canvas.create_rectangle((x + 1, y + 1), (x + cell_size - 1, y + cell_size - 1),
+                                             fill=snake_body_color)
             self.squares.insert(0, square)
+
 
 class Food:
     def __init__(self):
@@ -42,8 +44,8 @@ class Food:
             while (self.x, self.y) in snake.coords:
                 self.x = randrange(0, canvas_width // cell_size) * cell_size
                 self.y = randrange(0, canvas_height // cell_size) * cell_size
-            self.oval = canvas.create_oval((self.x+2, self.y+2), (self.x+cell_size-2, self.y+cell_size-2),
-                fill=food_color, outline=food_frame_color)
+            self.oval = canvas.create_oval((self.x + 2, self.y + 2), (self.x + cell_size - 2, self.y + cell_size - 2),
+                                           fill=food_color, outline=food_frame_color)
         else:
             self.stay = False
 
@@ -51,7 +53,10 @@ class Food:
         canvas.delete(self.oval)
         self.place()
 
+
 def move():
+    global snake, food, direction, game
+
     x, y = snake.coords[0]
 
     if direction == 'right':
@@ -63,24 +68,28 @@ def move():
     elif direction == 'down':
         y += cell_size
 
-    global score
+    global score, game
     if check_collision(x, y):
+        game = False
         if score == cells_num:
             text = 'YOU WIN'
         else:
             text = 'GAME OVER'
-        canvas.create_text((canvas_width//2, canvas_height//2),
-            text=text, font='Times 50')
+        canvas.create_text((canvas_width // 2, canvas_height // 2),
+                           text=text, font='Times 50')
+        canvas.create_text((canvas_width//2, canvas_height//2+50), text='Press R to restart', font='Times 20')
+        del snake
+        del food
     else:
         snake.coords.insert(0, (x, y))
-        square = canvas.create_rectangle((x+1, y+1), (x+cell_size-1, y+cell_size-1),
-            fill=snake_head_color, outline=snake_head_frame_color)
+        square = canvas.create_rectangle((x + 1, y + 1), (x + cell_size - 1, y + cell_size - 1),
+                                         fill=snake_head_color, outline=snake_head_frame_color)
         snake.squares.insert(0, square)
         new_line(x, y)
 
         canvas.itemconfig(snake.line_s[1], fill=snake_body_line_color)
         canvas.itemconfig(snake.squares[1], fill=snake_body_color,
-            outline= snake_body_frame_color)
+                          outline=snake_body_frame_color)
 
         if x == food.x and y == food.y:
             score += 1
@@ -94,6 +103,7 @@ def move():
 
         root.after(speed, move)
 
+
 def new_line(x, y):
     center_x = x + cell_size / 2
     center_y = y + cell_size / 2
@@ -101,40 +111,43 @@ def new_line(x, y):
 
     if direction == 'right':
         snake.line_s.insert(0, canvas.create_line((x, center_y),
-            center, fill=snake_head_line_color))
-        snake.line_f.insert(0, canvas.create_line((center_x-cell_size, center_y),
-            (x, center_y), fill=snake_body_line_color))
+                                                  center, fill=snake_head_line_color))
+        snake.line_f.insert(0, canvas.create_line((center_x - cell_size, center_y),
+                                                  (x, center_y), fill=snake_body_line_color))
     elif direction == 'left':
-        snake.line_s.insert(0, canvas.create_line((x+cell_size, center_y),
-            center, fill=snake_head_line_color))
-        snake.line_f.insert(0, canvas.create_line((center_x+cell_size, center_y),
-            (x+cell_size, center_y), fill=snake_body_line_color))
+        snake.line_s.insert(0, canvas.create_line((x + cell_size, center_y),
+                                                  center, fill=snake_head_line_color))
+        snake.line_f.insert(0, canvas.create_line((center_x + cell_size, center_y),
+                                                  (x + cell_size, center_y), fill=snake_body_line_color))
     elif direction == 'up':
-        snake.line_s.insert(0, canvas.create_line((center_x, y+cell_size),
-            center, fill=snake_head_line_color))
-        snake.line_f.insert(0, canvas.create_line((center_x, center_y+cell_size),
-            (center_x, y+cell_size), fill=snake_body_line_color))
+        snake.line_s.insert(0, canvas.create_line((center_x, y + cell_size),
+                                                  center, fill=snake_head_line_color))
+        snake.line_f.insert(0, canvas.create_line((center_x, center_y + cell_size),
+                                                  (center_x, y + cell_size), fill=snake_body_line_color))
     elif direction == 'down':
         snake.line_s.insert(0, canvas.create_line((center_x, y),
-            center, fill=snake_head_line_color))
-        snake.line_f.insert(0, canvas.create_line((center_x, center_y-cell_size),
-            (center_x, y), fill=snake_body_line_color))
+                                                  center, fill=snake_head_line_color))
+        snake.line_f.insert(0, canvas.create_line((center_x, center_y - cell_size),
+                                                  (center_x, y), fill=snake_body_line_color))
+
 
 def change_direction(event):
-    global direction
-    new = ''
-    if event.char in ('w', 'ц'):
-        new = 'up'
-    elif event.char in ('a', 'ф'):
-        new = 'left'
-    elif event.char in ('s', 'ы'):
-        new = 'down'
-    elif event.char in ('d', 'в'):
-        new = 'right'
+    if game:
+        global direction
+        new = direction
+        if event.keycode == 87:
+            new = 'up'
+        elif event.keycode == 65:
+            new = 'left'
+        elif event.keycode == 83:
+            new = 'down'
+        elif event.keycode == 68:
+            new = 'right'
 
-    if new != direction:
-        if new != wrong_direction():
-            direction = new
+        if new != direction:
+            if new != wrong_direction():
+                direction = new
+
 
 def wrong_direction():
     head = snake.coords[0]
@@ -149,6 +162,7 @@ def wrong_direction():
     elif head[1] > body[1]:
         return 'up'
 
+
 def check_collision(x, y):
     if x < 0 or x >= canvas_width:
         return True
@@ -159,6 +173,7 @@ def check_collision(x, y):
     if not food.stay:
         return True
     return False
+
 
 root = Tk()
 root.geometry('+0+0')
@@ -171,13 +186,24 @@ label_score.pack()
 canvas = Canvas(width=canvas_width, height=canvas_height, bg=canvas_bg)
 canvas.pack()
 
-direction = 'right'
-snake = Snake()
-food = Food()
+canvas.create_text((canvas_width / 2, canvas_height / 2), text='Press R to launch', font='Times 50')
 
+game = False
+def launch(event):
+    global snake, food, direction, score, game
+
+    canvas.delete('all')
+
+    score = snake_length
+    label_score.configure(text=f'{score}')
+    direction = 'right'
+    snake = Snake()
+    food = Food()
+    game = True
+    move()
+
+root.bind('<r>', launch)
 root.bind('<Key>', change_direction)
-
-move()
-
 root.bind('<Escape>', lambda e: root.destroy())
+
 root.mainloop()
