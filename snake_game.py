@@ -1,6 +1,9 @@
 from tkinter import Tk, Canvas, Label, PhotoImage
 from random import randrange
 
+def rgb(r, g, b):
+    return '#%02x%02x%02x' % (r,g,b)
+
 speed = 300  # время между кадрами
 canvas_width = 600  # общая длина
 canvas_height = 500  # общая высота
@@ -9,16 +12,17 @@ cells_num = (canvas_width // cell_size) * (canvas_height // cell_size)
 snake_length = 3  # начальная длина змейки
 
 # цвета
-canvas_bg = 'linen'  # игровое поле
-snake_head_color = 'lime green'  # голова змейки
-snake_head_frame_color = 'cyan'  # обводка головы змейки
-snake_head_line_color = 'red'  # линия на голове змейки
-snake_body_color = 'lawn green'  # тело змеи
-snake_body_frame_color = 'pale green'  # обводка для тела змейки
-snake_body_line_color = 'black'  # линия на теле змейки
-food_color = 'tomato'  # еда
-food_frame_color = 'coral'  # обводка еды
-
+main_win = rgb(40,44,52)  # фон
+canvas_bg = rgb(33,37,43)  # игровое поле
+font_color = rgb(205,151,98)  # цвет для текста
+snake_head_color = rgb(39,42,115)  # голова змейки
+snake_head_frame_color = rgb(39,52,127)  # обводка головы змейки
+snake_head_line_color = rgb(208,153,85)  # линия на голове змейки
+snake_body_color = rgb(111,188,120)  # тело змеи
+snake_body_frame_color = rgb(41, 100, 99)  # обводка для тела змейки
+snake_body_line_color = rgb(39,42,71)  # линия на теле змейки
+food_color = rgb(224,108,117)  # еда
+food_frame_color = rgb(112,45,51)  # обводка еды
 
 class Snake:
     def __init__(self):
@@ -77,8 +81,9 @@ def move():
         else:
             text = '\U0001F330 GAME OVER \U0001F330'
         canvas.create_text((canvas_width // 2, canvas_height // 2),
-                           text=text, font='Times 50')
-        canvas.create_text((canvas_width // 2, canvas_height // 2 + 50), text='Press R to restart', font='Times 20')
+                           text=text, font='Times 50', fill=font_color)
+        canvas.create_text((canvas_width // 2, canvas_height // 2 + 50), text='Press R to restart',
+                           font='Times 20', fill=font_color)
         del snake
         del food
     else:
@@ -102,6 +107,7 @@ def move():
             canvas.delete(snake.line_f.pop())
             canvas.delete(snake.squares.pop())
 
+        canvas.update()
         root.after(speed, move)
 
 
@@ -179,6 +185,7 @@ def check_collision(x, y):
 root = Tk()
 root.geometry('+0+0')
 root.resizable(False, False)
+root['bg'] = main_win
 root.title('Snake')
 root.iconphoto(False, PhotoImage(data='''iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAz
 fHTVMAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlvRkZzAAAAAAAAAAAA2iq2zgAAAAlwSFlzAAALEgAACxIB0t1+/
@@ -193,13 +200,13 @@ Z6Od++vxVG0vmiW7RDaadiqFeU41qI076Jg4+FbG4nrC2v5nd+v/tteGlx/s99c9GEjEEWm5qt6LUolU
 n/+Wg2SIRb0qQAAAABJRU5ErkJggg=='''))
 
 score = snake_length
-label_score = Label(text=f'{score}', font='Times 30')
+label_score = Label(text=f'{score}', font='Times 30', background=main_win, foreground=font_color)
 label_score.pack()
 
-canvas = Canvas(width=canvas_width, height=canvas_height, bg=canvas_bg)
-canvas.pack()
+canvas = Canvas(width=canvas_width, height=canvas_height, bg=canvas_bg, highlightbackground='grey')
+canvas.pack(padx=10, pady=10)
 
-canvas.create_text((canvas_width / 2, canvas_height / 2), text='Press R to launch', font='Times 50')
+canvas.create_text((canvas_width / 2, canvas_height / 2), text='Press R to launch', font='Times 50', fill=font_color)
 
 game = False
 
