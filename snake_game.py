@@ -41,7 +41,7 @@ class Food:
         self.stay = True
 
     def place(self):
-        if score != cells_num:
+        if score < cells_num:
             while (self.x, self.y) in snake.coords:
                 self.x = randrange(0, canvas_width // cell_size) * cell_size
                 self.y = randrange(0, canvas_height // cell_size) * cell_size
@@ -73,9 +73,9 @@ def move():
     if check_collision(x, y):
         game = False
         if score == cells_num:
-            text = 'YOU WIN'
+            text = '\U0001F40D YOU WIN \U0001F40D'
         else:
-            text = 'GAME OVER'
+            text = '\U0001F330 GAME OVER \U0001F330'
         canvas.create_text((canvas_width // 2, canvas_height // 2),
                            text=text, font='Times 50')
         canvas.create_text((canvas_width // 2, canvas_height // 2 + 50), text='Press R to restart', font='Times 20')
@@ -177,6 +177,7 @@ def check_collision(x, y):
 
 
 root = Tk()
+root.title('\U0001F40D Snake \U0001F40D')
 root.geometry('+0+0')
 root.resizable(False, False)
 
