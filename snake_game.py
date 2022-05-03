@@ -1,12 +1,12 @@
 from tkinter import Tk, Canvas, Label
 from random import randrange
 
-speed = 300
-canvas_width = 600
-canvas_height = 500
-cell_size = 50
+speed = 300 # время между кадрами
+canvas_width = 600 # общая длина
+canvas_height = 500 # общая высота
+cell_size = 50 # размер клетки
 cells_num = (canvas_width // cell_size) * (canvas_height // cell_size)
-snake_length = 3
+snake_length = 3 # начальная длина змейки
 
 canvas_bg = 'linen'
 snake_head_color = 'lime green'
