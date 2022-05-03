@@ -1,22 +1,23 @@
 from tkinter import Tk, Canvas, Label
 from random import randrange
 
-speed = 300 # время между кадрами
-canvas_width = 600 # общая длина
-canvas_height = 500 # общая высота
-cell_size = 50 # размер клетки
+speed = 300  # время между кадрами
+canvas_width = 600  # общая длина
+canvas_height = 500  # общая высота
+cell_size = 50  # размер клетки
 cells_num = (canvas_width // cell_size) * (canvas_height // cell_size)
-snake_length = 3 # начальная длина змейки
+snake_length = 3  # начальная длина змейки
 
-canvas_bg = 'linen'
-snake_head_color = 'lime green'
-snake_head_frame_color = 'cyan'
-snake_head_line_color = 'red'
-snake_body_color = 'lawn green'
-snake_body_frame_color = 'pale green'
-snake_body_line_color = 'black'
-food_color = 'tomato'
-food_frame_color = 'coral'
+# цвета
+canvas_bg = 'linen'  # игровое поле
+snake_head_color = 'lime green'  # голова змейки
+snake_head_frame_color = 'cyan'  # обводка головы змейки
+snake_head_line_color = 'red'  # линия на голове змейки
+snake_body_color = 'lawn green'  # тело змеи
+snake_body_frame_color = 'pale green'  # обводка для тела змейки
+snake_body_line_color = 'black'  # линия на теле змейки
+food_color = 'tomato'  # еда
+food_frame_color = 'coral'  # обводка еды
 
 
 class Snake:
@@ -77,7 +78,7 @@ def move():
             text = 'GAME OVER'
         canvas.create_text((canvas_width // 2, canvas_height // 2),
                            text=text, font='Times 50')
-        canvas.create_text((canvas_width//2, canvas_height//2+50), text='Press R to restart', font='Times 20')
+        canvas.create_text((canvas_width // 2, canvas_height // 2 + 50), text='Press R to restart', font='Times 20')
         del snake
         del food
     else:
@@ -189,6 +190,8 @@ canvas.pack()
 canvas.create_text((canvas_width / 2, canvas_height / 2), text='Press R to launch', font='Times 50')
 
 game = False
+
+
 def launch(event):
     global snake, food, direction, score, game
 
@@ -201,6 +204,7 @@ def launch(event):
     food = Food()
     game = True
     move()
+
 
 root.bind('<r>', launch)
 root.bind('<Key>', change_direction)
