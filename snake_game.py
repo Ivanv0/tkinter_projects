@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas, Label
+from tkinter import Tk, Canvas, Label, PhotoImage
 from random import randrange
 
 speed = 300  # время между кадрами
@@ -177,9 +177,20 @@ def check_collision(x, y):
 
 
 root = Tk()
-root.title('\U0001F40D Snake \U0001F40D')
 root.geometry('+0+0')
 root.resizable(False, False)
+root.title('Snake')
+root.iconphoto(False, PhotoImage(data='''iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAz
+fHTVMAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlvRkZzAAAAAAAAAAAA2iq2zgAAAAlwSFlzAAALEgAACxIB0t1+/
+AAAABR0RVh0b2lpbzpDb2xvclNwYWNlAHNSR0JeLUu7AAACp0lEQVQ4EQXBy2scdQAA4O83Mzv7StokJjFJq2k0YtpK7UWhFUUEhYKoUBFRDz2JoCDUgwhe
+9D8o4sGTF28eKogHD0ILtuLB0ldKWzA2bTE1SdPd7m72NZnx+wAAAAAAnnhufNdHAAAAAAAAAPGh2fr3J5fmrmIBACAGAAAAqJRK75z48Pmvp96dmXZhsGe
+l8fBHAIgAAAAAxicr++9vPggbqwML09X9AAARAAAAQKPRv1Qv1SUjwZ1b65cAABIAAACAbndweRgyNoqilbgCAJAAnpmpVt/LQrHbkDzO7eSRkShSSs300y
+DK+mGjtdMEAEhijp18+8jpsaXRtLm2WVSisfy/W5vRWL1WtFods68/GY2ObofOmbXmjYftnwAAwqtLC1df+ezpg+lKt5hsVoo8SYpKqRq283aRqIbmsFlsL
+W9dPvXH1U8e9LLzAADJ9OLYUxP1UHz3zV9nL7TbnwIAIEeWAkuABu5BeG1hz/m3Pt935OHNSvHgWiscPXogv3ju7zC/b8q/Ww21alWRDnXuDUwv1oqbq80w
+M7urOPfb8q+nb9x+P77daF04nDx6vLI7q5nOnfnlinSm5Mr1f/Tjodvr69bWG1qjmevX7pk4PBJG9w7C3mcnFuOV7fkAmDhQG33j8anyeL/TFUWJTpappmX
+9wVA1iXTzXDVBNSKPThz/4oVDF3++206gUoqOlculNwc75Vq3nxT1XfUg7xRxXA9FqSsLFXna0xskRZbnYe/kI3uGyVC802snY2n65ccfvPjVgZfHQ+Pmhs
+Z6Od++vxVG0vmiW7RDaadiqFeU41qI076Jg4+FbG4nrC2v5nd+v/tteGlx/s99c9GEjEEWm5qt6LUolUMx6IcQx4UiKel1+2ojZY2NLf3t0Nxa2fzhbKd16
+n/+Wg2SIRb0qQAAAABJRU5ErkJggg=='''))
 
 score = snake_length
 label_score = Label(text=f'{score}', font='Times 30')
