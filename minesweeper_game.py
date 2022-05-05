@@ -5,73 +5,132 @@ rows = 10
 columns = 10
 mines_count = (rows * columns) // 5
 
-cell_size = 3
-font = 'Times 15'
-c_font = 'Times 40'
+font = ('Times', 20)
+c_font = ('Times', 40)
 
 
 class Cell(Button):
-    def __init__(self, num, **kwargs):
+    def __init__(self, order_number, x, y, **kwargs):
         super(Cell, self).__init__(**kwargs, command=self.click)
-        self.num = num
+        self.bind('<Button-3>', lambda e: e.widget.r_click())
+
+        self.x = x
+        self.y = y
+        self.num = order_number
+        self.neighbours = ()
+
         self.number = None
-        self.neighbours = []
         self.is_mine = False
 
+    def reset(self):
+        self.number = None
+        self.is_mine = False
+        self.configure(text='', state='normal', background='#f0f0f0')
+
+    def get_neighbours(self):
+        _temp = []
+        if self.x == 0:
+            _temp.append(cells[1][self.y])
+            if self.y != 0:
+                _temp.append(cells[0][self.y - 1])
+                _temp.append(cells[1][self.y - 1])
+            if self.y != columns - 1:
+                _temp.append(cells[0][self.y + 1])
+                _temp.append(cells[1][self.y + 1])
+        elif self.x == rows - 1:
+            _temp.append(cells[rows - 2][self.y])
+            if self.y != 0:
+                _temp.append(cells[self.x][self.y - 1])
+                _temp.append(cells[self.x - 1][self.y - 1])
+            if self.y != columns - 1:
+                _temp.append(cells[self.x][self.y + 1])
+                _temp.append(cells[self.x - 1][self.y + 1])
+        else:
+            _temp.append(cells[self.x - 1][self.y])
+            _temp.append(cells[self.x + 1][self.y])
+            if self.y != 0:
+                _temp.append(cells[self.x - 1][self.y - 1])
+                _temp.append(cells[self.x][self.y - 1])
+                _temp.append(cells[self.x + 1][self.y - 1])
+            if self.y != columns - 1:
+                _temp.append(cells[self.x - 1][self.y + 1])
+                _temp.append(cells[self.x][self.y + 1])
+                _temp.append(cells[self.x + 1][self.y + 1])
+        self.neighbours = tuple(_temp)
+
+    def get_number(self):
+        if not self.is_mine:
+            self.number = len(tuple(filter(lambda n: n.is_mine, self.neighbours)))
+        else:
+            self.number = None
+
     def click(self):
-        self.configure(state='disabled')
-        if self.is_mine:
-            self.configure(text='*', background='red')
-            if counter_label['text'] != 'GAME OVER':
+        global game
+
+        if game:
+            self.configure(state='disabled')
+            if self.is_mine:
+                
+                self.configure(text='*', background='red')
+                
                 click_all_cells()
                 counter_label.configure(text='GAME OVER')
+                game = False
 
-        else:
-            if self.number != 0:
-                self.configure(text=f'{self.number}')
             else:
-                for i in self.neighbours:
-                    if i['state'] != 'disabled':
-                        i.click()
-            self.configure(background='grey85')
+                if self.number != 0:
+                    self.configure(text=f'{self.number}')
+                else:
+                    for neighbour in self.neighbours:
+                        if neighbour['state'] != 'disabled':
+                            neighbour.click()
+                self.configure(background='grey85')
 
     def r_click(self):
         global counter
 
-        if self['state'] == 'normal':
-            if counter > 0:
-                self.configure(state='disabled', text='\u274C')
-                counter -= 1
+        if game:
+            if self['state'] == 'normal':
+                if counter > 0:
+                    self.configure(state='disabled', text='\u274C')
+                    counter -= 1
+                    counter_label.configure(text=f'{counter}')
+                    win_check()
+            elif self['text'] == '\u274C':
+                self.configure(state='normal', text='')
+                counter += 1
                 counter_label.configure(text=f'{counter}')
-                win_check()
-        elif self['text'] == '\u274C':
-            self.configure(state='normal', text='')
-            counter += 1
-            counter_label.configure(text=f'{counter}')
-        elif self.number != None:
-            if self.number == len(tuple(filter(lambda s: s['text'] == '\u274C', self.neighbours))):
-                for i in tuple(filter(lambda s: s['state'] == 'normal', self.neighbours)):
-                    if i['state'] == 'normal':
-                        i.click()
-            elif self.number == len(n := tuple(filter(
-                    lambda s: s['state'] == 'normal' or s['text'] == '\u274C', self.neighbours))):
-                for i in tuple(filter(lambda s: s['state'] == 'normal', n)):
-                    i.r_click()
+            elif not self.is_mine:
+                if self.number == len(tuple(filter(lambda s: s['text'] == '\u274C', self.neighbours))):
+                    for neighbour in tuple(filter(lambda s: s['state'] == 'normal', self.neighbours)):
+                        if neighbour['state'] == 'normal':
+                            neighbour.click()
+                elif self.number == len(n := tuple(filter(
+                        lambda s: s['state'] == 'normal' or s['text'] == '\u274C', self.neighbours))):
+                    for neighbour in tuple(filter(lambda s: s['state'] == 'normal', n)):
+                        neighbour.r_click()
 
 
 def click_all_cells():
-    for i in range(rows):
-        for j in range(columns):
-            if cells[i][j]['state'] == 'normal':
-                cells[i][j].click()
+    for row in cells:
+        for cell in row:
+            if cell['state'] == 'normal':
+                cell.click()
+
 
 def win_check():
+    global game
+
     if len(mines) == len(tuple(filter(lambda s: s['text'] == '\u274C', mines))):
         click_all_cells()
         counter_label.configure(text='YOU WIN')
+        game = False
+
 
 root = Tk()
+root.title('Minesweeper')
 root.geometry('+0+0')
+root.resizable(False, False)
 
 counter = mines_count
 counter_label = Label(root, text=f'{counter}', font=c_font)
@@ -83,61 +142,24 @@ game_field.pack(padx=5, pady=5)
 cells = []
 mines = []
 
-m = list(range(rows*columns))
-shuffle(m)
-m = m[:mines_count]
 for i in range(rows):
     temp = []
     for j in range(columns):
-        btn = Cell(i*rows+j, master=game_field, font=font, width=cell_size, height=cell_size//2,
-                   borderwidth=1, relief='raise', disabledforeground='black')
-        btn.grid(row=i, column=j)
-        temp.append(btn)
-        if btn.num in m:
-            btn.is_mine = True
-            mines.append(btn)
+        _cell = Cell(i * rows + j, x=i, y=j, master=game_field, font=font, width=3,
+                     borderwidth=1, relief='raise', disabledforeground='black')
+        _cell.grid(row=i, column=j)
+        temp.append(_cell)
     cells.append(temp)
-del temp, m
+del i, j, temp
 
+for _row in cells:
+    for _cell in _row:
+        _cell.get_neighbours()
+del _row, _cell
 
-
-for i in range(rows):
-    for j in range(columns):
-        btn = cells[i][j]
-        btn.bind('<Button-3>', lambda e: e.widget.r_click())
-        if i == 0:
-            btn.neighbours.append(cells[1][j])
-            if j != 0:
-                btn.neighbours.append(cells[0][j - 1])
-                btn.neighbours.append(cells[1][j - 1])
-            if j != columns - 1:
-                btn.neighbours.append(cells[0][j + 1])
-                btn.neighbours.append(cells[1][j + 1])
-        elif i == rows - 1:
-            btn.neighbours.append(cells[rows-2][j])
-            if j != 0:
-                btn.neighbours.append(cells[i][j - 1])
-                btn.neighbours.append(cells[i - 1][j - 1])
-            if j != columns - 1:
-                btn.neighbours.append(cells[i][j + 1])
-                btn.neighbours.append(cells[i - 1][j + 1])
-        else:
-            btn.neighbours.append(cells[i - 1][j])
-            btn.neighbours.append(cells[i + 1][j])
-            if j != 0:
-                btn.neighbours.append(cells[i - 1][j - 1])
-                btn.neighbours.append(cells[i][j - 1])
-                btn.neighbours.append(cells[i + 1][j - 1])
-            if j != columns - 1:
-                btn.neighbours.append(cells[i - 1][j + 1])
-                btn.neighbours.append(cells[i][j + 1])
-                btn.neighbours.append(cells[i + 1][j + 1])
-            btn.neighbours = tuple(btn.neighbours)
-        if not btn.is_mine:
-            btn.number = len(tuple(filter(lambda x: x.is_mine, btn.neighbours)))
 
 def replay():
-    global counter, mines
+    global counter, mines, game
     counter = mines_count
     counter_label.configure(text=f'{counter}')
 
@@ -149,22 +171,20 @@ def replay():
 
     for row in cells:
         for cell in row:
-            cell.configure(text='', state='normal', background='#f0f0f0')
+            cell.reset()
 
             if cell.num in m:
                 cell.is_mine = True
-                cell.number = None
                 mines.append(cell)
-            else:
-                cell.is_mine = False
 
-    for row in range(rows):
-        for column in range(columns):
-            cell = cells[row][column]
-            if not cell.is_mine:
-                cell.number = len(tuple(filter(lambda x: x.is_mine, cell.neighbours)))
+    for row in cells:
+        for cell in row:
+            cell.get_number()
+    game = True
 
 
+game = False
+replay()
 counter_label.bind('<Button-1>', lambda e: replay())
 root.bind('<Escape>', lambda e: root.destroy())
 root.mainloop()
