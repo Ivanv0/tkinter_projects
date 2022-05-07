@@ -1,8 +1,10 @@
 from tkinter import Tk, Canvas, Label, PhotoImage
 from random import randrange
 
+
 def rgb(r, g, b):
-    return '#%02x%02x%02x' % (r,g,b)
+    return '#%02x%02x%02x' % (r, g, b)
+
 
 speed = 300  # время между кадрами
 canvas_width = 600  # общая длина
@@ -12,17 +14,18 @@ cells_num = (canvas_width // cell_size) * (canvas_height // cell_size)
 snake_length = 3  # начальная длина змейки
 
 # цвета
-main_win = rgb(40,44,52)  # фон
-canvas_bg = rgb(33,37,43)  # игровое поле
-font_color = rgb(205,151,98)  # цвет для текста
-snake_head_color = rgb(39,42,115)  # голова змейки
-snake_head_frame_color = rgb(39,52,127)  # обводка головы змейки
-snake_head_line_color = rgb(208,153,85)  # линия на голове змейки
-snake_body_color = rgb(111,188,120)  # тело змеи
+main_win = rgb(40, 44, 52)  # фон
+canvas_bg = rgb(33, 37, 43)  # игровое поле
+font_color = rgb(205, 151, 98)  # цвет для текста
+snake_head_color = rgb(39, 42, 115)  # голова змейки
+snake_head_frame_color = rgb(39, 52, 127)  # обводка головы змейки
+snake_head_line_color = rgb(208, 153, 85)  # линия на голове змейки
+snake_body_color = rgb(111, 188, 120)  # тело змеи
 snake_body_frame_color = rgb(41, 100, 99)  # обводка для тела змейки
-snake_body_line_color = rgb(39,42,71)  # линия на теле змейки
-food_color = rgb(224,108,117)  # еда
-food_frame_color = rgb(112,45,51)  # обводка еды
+snake_body_line_color = rgb(39, 42, 71)  # линия на теле змейки
+food_color = rgb(224, 108, 117)  # еда
+food_frame_color = rgb(112, 45, 51)  # обводка еды
+
 
 class Snake:
     def __init__(self):
@@ -211,7 +214,7 @@ canvas.create_text((canvas_width / 2, canvas_height / 2), text='Press R to launc
 game = False
 
 
-def launch(event):
+def launch():
     global snake, food, direction, score, game
 
     canvas.delete('all')
@@ -225,7 +228,7 @@ def launch(event):
     move()
 
 
-root.bind('<r>', launch)
+root.bind('<r>', lambda e: launch())
 root.bind('<Key>', change_direction)
 root.bind('<Escape>', lambda e: root.destroy())
 
